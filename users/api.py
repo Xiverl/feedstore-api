@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from db import get_db
 from users.sсhemas import UserCreate, UserRead, AddressCreate, Address
-from users.crud import create_user
+from users.crud import create_user, get_user
 
 
 users_router = APIRouter(prefix="/users", tags=["users"])
@@ -29,7 +29,10 @@ async def read_users(
 @users_router.get("/{user_id}", response_model=UserRead)
 async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
     """Получение конкретного пользователя по ID."""
-    return {"msg": f"Отображаем инфрмацию пользователе №{user_id}"}
+    user = await get_user(user_id, db)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 
 @users_router.delete("/{user_id}")
