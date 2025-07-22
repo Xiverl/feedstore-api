@@ -1,10 +1,11 @@
+from typing import List, Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
 from src.db import get_db
-from src.users.sсhemas import UserCreate, UserRead, AddressCreate, Address
-from src.users.crud import create_user, get_user, get_user_list
+from src.users.sсhemas import UserCreate, UserRead, AddressCreate
+from src.users.crud import create_user, get_user, get_user_list, create_address
 
 
 users_router = APIRouter(prefix="/users", tags=["users"])
@@ -44,9 +45,13 @@ async def remove_user(user_id: int, db: AsyncSession = Depends(get_db)):
     return {"msg": f"Удаляем пользователя №{user_id}"}
 
 
-@users_router.post("/{user_id}/addresses", response_model=Address)
+@users_router.post(
+    "/addresses",
+    response_model=Annotated[UserRead, Depends()]
+)
 async def add_address(
-    user_id: int, address: AddressCreate, db: AsyncSession = Depends(get_db)
+    address: Annotated[AddressCreate, Depends()],
+    db: AsyncSession = Depends(get_db)
 ):
     """Добавление адреса для конкретного пользователя."""
-    return {"msg": f"Добавляем новый адресс для пользователя №{user_id}"}
+    return await create_address(address, db)

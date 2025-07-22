@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from src.db import Base
 
 
@@ -7,24 +7,26 @@ class UserModel(Base):
     """Модель для хранения пользователя в БД."""
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    first_name = Column(String)
-    last_name = Column(String)
-    hashed_password = Column(String)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(unique=True)
+    first_name: Mapped[str]
+    last_name: Mapped[str]
+    hashed_password: Mapped[str]
 
     addresses = relationship("AddressModel", back_populates="user")
 
 
 class AddressModel(Base):
-    """модель для хранения адресов пользователя в БД."""
+    """Модель для хранения адрессов пользователя в БД."""
     __tablename__ = "addresses"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    street = Column(String)
-    city = Column(String)
-    state = Column(String)
-    zip_code = Column(String)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    street: Mapped[str]
+    city: Mapped[str]
+    state: Mapped[str]
+    zip_code: Mapped[str]
+    geo_x: Mapped[float]
+    geo_y: Mapped[float]
 
     user = relationship("UserModel", back_populates="addresses")

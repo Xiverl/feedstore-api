@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class AddressBase(BaseModel):
@@ -8,18 +8,19 @@ class AddressBase(BaseModel):
     city: str
     state: str
     zip_code: str
+    geo_x: float
+    geo_y: float
 
 
 class AddressCreate(AddressBase):
-    pass
+    user_id: int
 
 
 class Address(AddressBase):
     id: int
     user_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserBase(BaseModel):
@@ -36,5 +37,4 @@ class UserRead(UserBase):
     id: int
     addresses: List[Address] | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
