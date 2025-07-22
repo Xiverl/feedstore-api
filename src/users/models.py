@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from db import Base
+from src.db import Base
 
 
 class UserModel(Base):
+    """Модель для хранения пользователя в БД."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -16,6 +17,7 @@ class UserModel(Base):
 
 
 class AddressModel(Base):
+    """модель для хранения адресов пользователя в БД."""
     __tablename__ = "addresses"
 
     id = Column(Integer, primary_key=True, index=True)

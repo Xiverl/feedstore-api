@@ -34,7 +34,7 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     id: int
-    addresses: List[Address] = []
+    addresses: List[Address] | None = None
 
     class Config:
         from_attributes = True

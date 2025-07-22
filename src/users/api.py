@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from db import get_db
-from users.sсhemas import UserCreate, UserRead, AddressCreate, Address
-from users.crud import create_user, get_user
+from src.db import get_db
+from src.users.sсhemas import UserCreate, UserRead, AddressCreate, Address
+from src.users.crud import create_user, get_user, get_user_list
 
 
 users_router = APIRouter(prefix="/users", tags=["users"])
@@ -23,7 +23,10 @@ async def read_users(
     skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
 ):
     """Получение списка пользователей с пагинацией."""
-    return {"msg": "Отображаем информацию о существующих пользователях"}
+    users = await get_user_list(db)
+    if not users:
+        raise HTTPException(status_code=404, detail="User not found")
+    return users
 
 
 @users_router.get("/{user_id}", response_model=UserRead)
